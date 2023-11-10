@@ -5,17 +5,25 @@ build {
 
     provisioner "shell" {
         inline = [
-            "echo test",
-            "sudo apt-get upgrade",
+            "echo Y | sudo apt-get update",
+            "echo Y | sudo apt-get upgrade",
+            "curl https://sh.rustup.rs -sSf | sh -s -- -y",
+            "echo source $HOME/.cargo/env >> $HOME/.bashrc"
         ]
     }
 
-    post-processor "googlecompute-export" {
-        paths = [
-            "gs://packer_images_ckelly/ubuntu/rust/file.tar.gz",
-            "gs://packer_images_ckelly/ubuntu/test/"
-        ]
-        disk_size = 100
-        machine_type = "e2-standard-2"
+    post-processors {
+        post-processor "compress" {
+            output = "output/disk.raw.tar.gz"
+        }
+        
+        post-processor "googlecompute-import" {
+            project_id = var.project_id
+            bucket = var.bucket_name
+            account_file = var.account_file
+
+            image_name = local.vm_name
+            image_architecture = var.architecture
+        }
     }
 }

@@ -1,20 +1,27 @@
 source "googlecompute" "rust" {
-    project_id = var.project_id
-    account_file = var.account_file
-    source_image_family = var.source_image_family
-    zone = var.zone
+  // required
+  project_id          = var.project_id
+  source_image_family = var.source_image_family
+  zone                = var.zone
 
-    image_name = "rusty-boy-${local.datestamp}"
-    image_description = "rust base ami"
-    image_labels = {
-        "test" = true,
-        "base" = "ubuntu",
-        "env" = "dev",
-    }
+  // metadata
+  account_file = var.account_file
 
-    machine_type = "e2-standard-2"
+  // image settings 
+  image_name        = local.vm_name
+  image_description = "rust base ami"
+  image_labels = {
+    "test" = true,
+    "base" = "ubuntu",
+    "env"  = "dev",
+  }
 
-    use_os_login = true
-    ssh_username = "packer"
+  // machine settings
+  machine_type       = "e2-standard-2"
+  disk_size          = 20
+  disk_type          = "pd-standard"
+  enable_secure_boot = true
+  use_os_login       = true
+  ssh_username       = "packer"
 
 }
